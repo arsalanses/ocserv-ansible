@@ -1,0 +1,29 @@
+- name: Ocserv directory
+  ansible.builtin.file:
+    path: ~/ocserv/
+    state: directory
+    mode: '700'
+
+- name: Copy ocserv
+  ansible.builtin.copy:
+    src: files
+    dest: ~/ocserv/
+    owner: root
+    group: root
+    mode: '700'
+
+- name: Build image
+  community.docker.docker_image:
+    name: ocserv:latest
+    build:
+      path: ~/ocserv/files/
+    source: build
+
+- name: Create a container
+  community.docker.docker_container:
+    name: ocserv
+    image: ocserv:latest
+    privileged: true
+    ports:
+      - "443:443"
+      - "443:443/udp"
